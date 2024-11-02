@@ -1,9 +1,9 @@
-from selenium import webdriver
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 
 
 from database.connector import Database
+from driver.driver import Driver
 from parsers.parser_match_time_line import ParserMatchTimeLine
 from parsers.parser_match_statistics import ParserMatchStatistics
 
@@ -11,7 +11,7 @@ from models.match_data import MatchData
 from utils.utils import Utils
 
 
-def get_data(driver, db: Database):
+def get_data(driver, db: Database, current_step, total_steps, id_executor):
     match_id, url = MatchData.get_random_unprocessed_match(db)
 
     # Get TimeLine data
@@ -28,22 +28,23 @@ def get_data(driver, db: Database):
 
     for half in halfs:
         ParserMatchStatistics.get_match_statistics(driver=driver, db=db, match_id=match_id, half=half, url=halfs[half])
-        print(f"Half {half}, match_id={match_id} added")
-    print(f"{'='*40} {url} | {match_id} {'='*40}")
 
     MatchData.mark_match_as_processed(db=db, match_id=match_id, fl_value=2)
+
+    print(f"| {id_executor}ex | Выполнено {current_step} из {total_steps} шагов ({(current_step / total_steps) * 100:.2f}%)")
 
 
 @Utils.execution_time
 def main(steps=1, id_executor=1):
 
-    driver = webdriver.Chrome()
+    dcls = Driver()
+    driver = dcls.get_driver()
     db = Database()
 
-    for _ in range(steps):
-        get_data(driver=driver, db=db)
+    for current_step in range(1, steps + 1):
+        get_data(driver=driver, db=db, current_step=current_step, total_steps=steps, id_executor=id_executor)
 
-    print(f"{'*'*40} Execuror - {id_executor} - Done{'*'*40}")
+    print(f"{'*'*33} Execuror - {id_executor} - Done{'*'*33}")
     driver.quit()
 
 

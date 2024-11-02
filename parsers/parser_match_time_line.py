@@ -32,7 +32,6 @@ class ParserMatchTimeLine:
 
         Utils.get_flashscore_url(driver=driver, url=url)
 
-
         try:
             # Ожидание появления элемента в течение 3 секунд
             WebDriverWait(driver, 3).until(
@@ -44,8 +43,6 @@ class ParserMatchTimeLine:
             print("Элемент не найден за отведенное время")
             return False
 
-        print(f"Количество дивов во временной линии: {len(divs)}")
-
         for div in divs:
             css_class = div.get_attribute('class')
             if 'section__title' in css_class:
@@ -56,7 +53,7 @@ class ParserMatchTimeLine:
                     team = 2
                 elif 'home' in css_class:
                     team = 1
-                data = ParserMatchTimeLine.get_data_from_timeline_row(div=div, url=url)
+                data = ParserMatchTimeLine.get_data_from_timeline_row(div=div)
                 if data:
                     data['match_id'] = match_id
                     data['team_type'] = team
@@ -66,12 +63,11 @@ class ParserMatchTimeLine:
 
 
     @staticmethod
-    def get_data_from_timeline_row(div, url):
+    def get_data_from_timeline_row(div):
         data = dict()
         try:
             incedent = div.find_element(By.CSS_SELECTOR, css_selectors['incident'])
         except:
-            # input(f"Похоже пустой тайм ======== {url} =========")
             return None
 
         timebox = incedent.find_element(By.CSS_SELECTOR, css_selectors['timebox']).text
