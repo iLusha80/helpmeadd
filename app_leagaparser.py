@@ -23,13 +23,12 @@ def main():
         print(f"Парсим данные из чемпионата '{name}'[{saeson}] с сайта {url}")
         ParserMatchInfo.get_match_info(driver=driver, db=db, url=url_result, id_champ=id_champ)
         print(f"Готово с чемпионатом '{name}'.")
-        get_archive_list(driver=driver, url=url)
 
     # Закрываем браузер
     driver.quit()
 
 
-def get_archive_list(driver, url: str): #, id_champ: int):
+def get_archive_list(driver, url: str):
     url_archive = f"{url}archive/"
     driver.get(url_archive)
     css_selector_rows = '.archive__season .archive__text--clickable'
@@ -40,8 +39,6 @@ def get_archive_list(driver, url: str): #, id_champ: int):
         season = row.text
         # print(f"Ссылка на архив сезона {season}: {link}")
         print(f"""csd.insert(db=db, name='{season}', url='{link}', season='{season.split()[-1]}')""")
-
-
 
 
 if __name__ == "__main__":

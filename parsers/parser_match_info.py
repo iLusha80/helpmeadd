@@ -5,7 +5,9 @@ from time import sleep
 from database.connector import Database
 from models.match_data import MatchData
 from utils.utils import Utils
+
 #TODO сохранять куки отдельный пакет для драйвера и функций с ним связанных
+#TODO : справочник css_selectors
 css_selectors = {
     'matches'           : '.event__match',
     'match_time'        : '.event__time',
