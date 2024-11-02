@@ -4,7 +4,8 @@ from time import sleep
 
 from database.connector import Database
 from models.match_data import MatchData
-
+from utils.utils import Utils
+#TODO сохранять куки отдельный пакет для драйвера и функций с ним связанных
 css_selectors = {
     'matches'           : '.event__match',
     'match_time'        : '.event__time',
@@ -20,9 +21,18 @@ css_selectors = {
 
 class ParserMatchInfo:
     @staticmethod
-    def get_match_info(driver, db: Database, url: str) -> list[dict]:
+    def get_match_info(driver, db: Database, url: str, id_champ: int) -> list[dict]:
+        """
+        Забираем информацию о матче из списка результатов
 
-        driver.get(url)
+        :param driver:   Драйвер/Браузер
+        :param db:       Экземпляр подключения к Базе Данных
+        :param url:      Ссылка на Лигу
+        :param id_champ: ИД Чемпионата в базе
+        :return:
+        """
+
+        Utils.get_flashscore_url(driver=driver, url=url)
 
         ParserMatchInfo.get_more_match(driver)
 
@@ -42,6 +52,7 @@ class ParserMatchInfo:
             dct['home_goals'] = match.find_element(By.CSS_SELECTOR, css_selectors['home_goals']).text
             dct['away_goals'] = match.find_element(By.CSS_SELECTOR, css_selectors['away_goals']).text
             dct['full_link'] = match.find_element(By.CSS_SELECTOR, css_selectors['full_link']).get_attribute('href')
+            dct['id_champ'] = id_champ
 
             result.append(dct)
 

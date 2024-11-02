@@ -11,6 +11,8 @@ class Utils:
             end_time = perf_counter()
             execution_time = end_time - start_time
             print(f'Execution time of {func.__name__}: {execution_time:.2f} seconds')
+            print(f'Args: {args}')
+            print(f'kwargs: {kwargs}')
             return result
         return wrapper
 

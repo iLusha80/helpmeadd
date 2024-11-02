@@ -1,11 +1,14 @@
 from selenium import webdriver
 import argparse
+from concurrent.futures import ThreadPoolExecutor
+
 
 from database.connector import Database
 from parsers.parser_match_time_line import ParserMatchTimeLine
 from parsers.parser_match_statistics import ParserMatchStatistics
 
 from models.match_data import MatchData
+from utils.utils import Utils
 
 
 def get_data(driver, db: Database):
@@ -31,7 +34,8 @@ def get_data(driver, db: Database):
     MatchData.mark_match_as_processed(db=db, match_id=match_id, fl_value=2)
 
 
-def main(steps=1):
+@Utils.execution_time
+def main(steps=1, id_executor=1):
 
     driver = webdriver.Chrome()
     db = Database()
@@ -39,11 +43,24 @@ def main(steps=1):
     for _ in range(steps):
         get_data(driver=driver, db=db)
 
+    print(f"{'*'*40} Execuror - {id_executor} - Done{'*'*40}")
     driver.quit()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Парсер данных с веб-сайта.")
-    parser.add_argument('-s', '--steps', type=int, default=1, help='Количество шагов (итераций) для выполнения.')
+    parser.add_argument('-s', '--steps', type=int, default=1,
+                        help='Количество шагов (итераций) для выполнения на поток.')
+    parser.add_argument('-p', '--pool', type=int, default=1, help='Количество потоков для выполнения.')
+    parser.add_argument('-m', '--matches', type=int, help='Общее количество матчей для анализа.')
     args = parser.parse_args()
-    main(steps=args.steps)
+
+    steps_per_executor = args.steps
+    if args.matches:
+        steps_per_executor = args.matches // args.pool
+
+    with ThreadPoolExecutor(max_workers=args.pool) as executor:
+        for i in range(args.pool):
+            executor.submit(main, steps=steps_per_executor, id_executor=i)
+
+    print("Все потоки завершены.")
