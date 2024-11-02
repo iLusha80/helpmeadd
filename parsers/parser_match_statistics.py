@@ -34,14 +34,10 @@ class ParserMatchStatistics:
         home_data = dict()
         away_data = dict()
 
-        # statistics_rows = driver.find_elements(By.CSS_SELECTOR, css_selectors['statistics_rows'])
-        print(f"len statistics_rows - {len(statistics_rows)}")
-
         for row in statistics_rows:
             category = row.find_element(By.CSS_SELECTOR, css_selectors['categories']).text
             home_value = row.find_element(By.CSS_SELECTOR, css_selectors['home_values']).text
             away_value = row.find_element(By.CSS_SELECTOR, css_selectors['away_values']).text
-            # ['match_id', 'team_type', 'half', 'indicator_name', 'value']
             home_data['match_id'] = match_id
             away_data['match_id'] = match_id
             home_data['team_type'] = 1
