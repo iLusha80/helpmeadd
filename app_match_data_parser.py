@@ -9,10 +9,16 @@ from parsers.parser_match_statistics import ParserMatchStatistics
 
 from models.match_data import MatchData
 from utils.utils import Utils
+from logger import Logger
+
+logger = Logger(__name__)
 
 
 def get_data(driver, db: Database, current_step, total_steps, id_executor):
+
     match_id, url = MatchData.get_random_unprocessed_match(db)
+
+    logger.info(f"Execuror - {id_executor} - Загружается матч {match_id}: {url}")
 
     # Get TimeLine data
     ParserMatchTimeLine.get_match_time_line(driver=driver, db=db, match_id=match_id, url=url)
@@ -31,20 +37,23 @@ def get_data(driver, db: Database, current_step, total_steps, id_executor):
 
     MatchData.mark_match_as_processed(db=db, match_id=match_id, fl_value=2)
 
-    print(f"| {id_executor}ex | Выполнено {current_step} из {total_steps} шагов ({(current_step / total_steps) * 100:.2f}%)")
+    txt = f"| {id_executor}ex | Загруженно {current_step} из {total_steps} матчей ({(current_step / total_steps) * 100:.2f}%)"
+    logger.info(txt)
 
 
 @Utils.execution_time
 def main(steps=1, id_executor=1):
 
-    dcls = Driver()
+    dcls = Driver(headers=False)
     driver = dcls.get_driver()
     db = Database()
 
     for current_step in range(1, steps + 1):
         get_data(driver=driver, db=db, current_step=current_step, total_steps=steps, id_executor=id_executor)
 
-    print(f"{'*'*33} Execuror - {id_executor} - Done{'*'*33}")
+    logger.info(f"Execuror - {id_executor} - Done!")
+
+    db.close()
     driver.quit()
 
 
@@ -62,6 +71,9 @@ if __name__ == "__main__":
 
     with ThreadPoolExecutor(max_workers=args.pool) as executor:
         for i in range(args.pool):
-            executor.submit(main, steps=steps_per_executor, id_executor=i)
+            try:
+                executor.submit(main, steps=steps_per_executor, id_executor=i)
+            except Exception as e:
+                logger.error(f"Ошибка при создании потока: {str(e)}")
 
-    print("Все потоки завершены.")
+    logger.warning("Все потоки завершены")

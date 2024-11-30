@@ -1,5 +1,7 @@
 from time import perf_counter
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class Utils:
@@ -19,10 +21,25 @@ class Utils:
     @staticmethod
     def get_flashscore_url(driver, url: str):
         driver.get(url)
-        try:
-            button = driver.find_element(By.CSS_SELECTOR, '#onetrust-accept-btn-handler') #
-            button.click()
-            return True
-        except Exception as e:
-            # print(f'Error: {str(e)}')
-            return False
+        # button = driver.find_element(By.CSS_SELECTOR, '#onetrust-accept-btn-handler')  #
+        # button.click()
+
+        # try:
+        #     button = driver.find_element(By.CSS_SELECTOR, '#onetrust-accept-btn-handler') #
+        #     button.click()
+        #     return True
+        # except Exception as e:
+        #     # print(f'Error: {str(e)}')
+        #     return False
+
+    @staticmethod
+    def load_page(driver, css_selector: str):
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
+        # try:
+        #     # Ожидание появления элемента в течение 3 секунд
+        #     WebDriverWait(driver, 3).until(
+        #         EC.presence_of_element_located((By.CSS_SELECTOR, css_selector))
+        #     )
+        #     return True
+        # except Exception as e:
+        #     return str(e)

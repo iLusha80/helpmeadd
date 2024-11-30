@@ -3,7 +3,6 @@ import os
 import psycopg2
 
 import config
-from config import MATCH_STATISTICS_TABLE_NAME, MATCH_TIME_LINE_TABLE_NAME
 
 
 class Database:

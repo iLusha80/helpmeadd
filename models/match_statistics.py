@@ -13,18 +13,6 @@ class MatchStatisticsData:
     def insert(db: Database, match_id: int, team_type: int, half: str, indicator_name: str, value: float):
         if isinstance(value, str) and '%' in value:
             value = float(value.replace('%', '')) / 100.0
-
-        query = f"""INSERT INTO {MATCH_STATISTICS_TABLE_NAME}
-                (match_id, team_type, half, indicator_name, value)
-                VALUES ({match_id}, {team_type}, '{half}', '{indicator_name}', {value});"""
-
-        db.cursor.execute(query)
-        db.conn.commit()
-
-    @staticmethod
-    def insert_v2(db: Database, match_id: int, team_type: int, half: str, indicator_name: str, value: float):
-        if isinstance(value, str) and '%' in value:
-            value = float(value.replace('%', '')) / 100.0
         query = f"""INSERT INTO {MATCH_STATISTICS_TABLE_NAME}
                             (match_id, team_type, half, indicator_name, value)
                             VALUES (%s, %s, %s, %s, %s);"""

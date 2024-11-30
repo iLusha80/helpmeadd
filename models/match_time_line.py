@@ -5,24 +5,13 @@ from config import MATCH_TIME_LINE_TABLE_NAME
 class MatchTimeLineData:
     @staticmethod
     def insert(db: Database, match_id: int, team_type: int, half: str, minutes: int, add_minutes: int,
-                   event_type: str, player_name: str, assist_player_name: str):
-        query = f"""INSERT INTO {MATCH_TIME_LINE_TABLE_NAME}
-                (match_id, team_type, half, minutes, add_minutes, event_type, player_name, assist_player_name)
-                VALUES ({match_id}, {team_type}, '{half}', {minutes}, {add_minutes}, '{event_type}',
-                 '{player_name}', '{assist_player_name}');"""
-        db.cursor.execute(query)
-        db.conn.commit()
-
-    @staticmethod
-    def insert_v2(db: Database, match_id: int, team_type: int, half: str, minutes: int, add_minutes: int,
-                   event_type: str, player_name: str, assist_player_name: str):
+               event_type: str, player_name: str, assist_player_name: str):
 
         query = f"""INSERT INTO {MATCH_TIME_LINE_TABLE_NAME}
                             (match_id, team_type, half, minutes, add_minutes, event_type, player_name, assist_player_name)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
-
-        db.cursor.execute(query, (match_id, team_type, half, minutes, add_minutes, event_type,
-                                 player_name, assist_player_name))
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (match_id, team_type, half, minutes, add_minutes, event_type, player_name, assist_player_name)
+        db.cursor.execute(query, values)
         db.conn.commit()
 
     @staticmethod

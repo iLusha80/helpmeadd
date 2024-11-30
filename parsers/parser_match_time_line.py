@@ -5,7 +5,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from database.connector import Database
 from models.match_time_line import MatchTimeLineData
 from utils.utils import Utils
+from logger import Logger
 
+logger = Logger(__name__)
 
 css_selectors = {
     'time_line_div' : '[class*="verticalSections"] > div',
@@ -32,16 +34,15 @@ class ParserMatchTimeLine:
 
         Utils.get_flashscore_url(driver=driver, url=url)
 
-        try:
-            # Ожидание появления элемента в течение 3 секунд
-            WebDriverWait(driver, 3).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, css_selectors['time_line_div']))
-            )
-            divs = driver.find_elements(By.CSS_SELECTOR, css_selectors['time_line_div'])
-        except:
-            # Если элемент не появился за 3 секунд, выполнится этот блок
-            print("Элемент не найден за отведенное время")
+        result = Utils.load_page(driver=driver,css_selector=css_selectors['time_line_div'])
+
+        if result != True:
+            logger.error(f"Err - {result}\n{url}")
             return False
+        else:
+            logger.debug(f"Success- {result}")
+
+        divs = driver.find_elements(By.CSS_SELECTOR, css_selectors['time_line_div'])
 
         for div in divs:
             css_class = div.get_attribute('class')
@@ -59,19 +60,30 @@ class ParserMatchTimeLine:
                     data['team_type'] = team
                     data['half'] = half
 
-                    MatchTimeLineData.insert_v2(db, **data)
+                    MatchTimeLineData.insert(db, **data)
 
 
     @staticmethod
     def get_data_from_timeline_row(div):
         data = dict()
-        try:
-            incedent = div.find_element(By.CSS_SELECTOR, css_selectors['incident'])
-        except:
-            return None
+
+        incedent = div.find_element(By.CSS_SELECTOR, css_selectors['incident'])
+
+        # try:
+        #     incedent = div.find_element(By.CSS_SELECTOR, css_selectors['incident'])
+        # except:
+        #     logger.error(f"Не найдено инцидента в css_selectors['incident']: {css_selectors['incident']}")
+        #     return None
 
         timebox = incedent.find_element(By.CSS_SELECTOR, css_selectors['timebox']).text
-        data['minutes'] = int(timebox.split("+")[0].replace("'", ""))
+
+        try:
+            tmp = timebox.split("+")[0].replace("'", "")
+            tmp = tmp.split(":")[0]
+            data['minutes'] = int(tmp)
+        except:
+            data['minutes'] = -1
+            logger.error(f"Не удалось распарсить время в css_selectors['timebox']: {css_selectors['timebox']}")
 
         try:
             data['add_minutes'] = int(timebox.split("+")[1].replace("'", ""))

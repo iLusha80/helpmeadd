@@ -1,7 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from database.connector import Database
 from parsers.parser_match_info import ParserMatchInfo
@@ -10,6 +7,9 @@ from models.championships import ChampionShipData
 
 
 def main():
+    """
+    Основная точка входа
+    """
     # Загружаем драйвер Chrome
     driver = webdriver.Chrome()
     db = Database()
@@ -28,19 +28,5 @@ def main():
     driver.quit()
 
 
-def get_archive_list(driver, url: str):
-    url_archive = f"{url}archive/"
-    driver.get(url_archive)
-    css_selector_rows = '.archive__season .archive__text--clickable'
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector_rows)))
-    rows = driver.find_elements(By.CSS_SELECTOR, css_selector_rows)
-    for row in rows:
-        link = row.get_attribute('href')
-        season = row.text
-        # print(f"Ссылка на архив сезона {season}: {link}")
-        print(f"""csd.insert(db=db, name='{season}', url='{link}', season='{season.split()[-1]}')""")
-
-
 if __name__ == "__main__":
     main()
-

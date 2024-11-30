@@ -3,15 +3,6 @@ from config import MATCH_DATA_TABLE_NAME
 
 
 class MatchData:
-    # @staticmethod
-    # def insert(db: Database, matchtime: str, hometeam: str, awayteam: str,
-    #                home_goals: int, away_goals: int, full_link: str):
-    #     query = f"""INSERT INTO {MATCH_DATA_TABLE_NAME}
-    #             (matchtime, hometeam, awayteam, home_goals, away_goals, full_link)
-    #             VALUES ('{matchtime}', '{hometeam}', '{awayteam}', {home_goals}, {away_goals}, '{full_link}');"""
-    #     db.cursor.execute(query)
-    #     db.conn.commit()
-
     @staticmethod
     def insert_many(db: Database, data: list[dict]):
         query = f"""INSERT INTO {MATCH_DATA_TABLE_NAME}

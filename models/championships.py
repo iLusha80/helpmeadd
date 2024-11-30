@@ -5,16 +5,13 @@ from config import CHAMPIONSHIP_TABLE_NAME
 class ChampionShipData:
     @staticmethod
     def insert(db: Database, name: str, url: str, season='2024-2025'):
-        try:
-            query = f"""INSERT INTO {CHAMPIONSHIP_TABLE_NAME} (name, url, season) 
-            VALUES ('{name}', '{url}', '{season}') 
+        query = f"""INSERT INTO {CHAMPIONSHIP_TABLE_NAME} (name, url, season) 
+            VALUES (%s, %s, %s) 
             ON CONFLICT (url) DO NOTHING;"""
 
-            db.cursor.execute(query)
-            db.conn.commit()
-            print(f"Чемпионат '{name}' {season} успешно добавлен.")
-        except db.cursor.IntegrityError:
-            print(f"Запись с именем '{name}' уже существует, добавление пропущено.")
+        db.cursor.execute(query, (name, url, season))
+        db.conn.commit()
+        print(f"Чемпионат '{name}' {season} успешно добавлен.")
 
     @staticmethod
     def select_all(db: Database):
