@@ -55,3 +55,13 @@ class MatchData:
         """
         db.cursor.execute(query)
         db.conn.commit()
+
+    @staticmethod
+    def get_match_url_by_id(db: Database, match_id: int) -> str:
+        query = f"""
+        SELECT full_link
+        FROM {MATCH_DATA_TABLE_NAME}
+        WHERE id = {match_id}
+        """
+        db.cursor.execute(query)
+        return db.cursor.fetchone()[0]
