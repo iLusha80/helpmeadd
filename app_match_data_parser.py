@@ -16,9 +16,9 @@ logger = Logger(__name__)
 
 def get_data(driver, db: Database, current_step, total_steps, id_executor):
 
-    match_id, url = MatchData.get_random_unprocessed_match(db)
+    match_id, url = MatchData.get_random_unprocessed_matches(db)[0]
 
-    logger.info(f"Execuror - {id_executor} - Загружается матч {match_id}: {url}")
+    logger.info(f"| {id_executor}ex | Начинаем загрузку матча {match_id}\n url - ({url})")
 
     # Get TimeLine data
     ParserMatchTimeLine.get_match_time_line(driver=driver, db=db, match_id=match_id, url=url)
@@ -32,6 +32,8 @@ def get_data(driver, db: Database, current_step, total_steps, id_executor):
         'second_half': f'{url}/match-statistics/2'
     }
 
+    # logger.info(halfs)
+
     for half in halfs:
         ParserMatchStatistics.get_match_statistics(driver=driver, db=db, match_id=match_id, half=half, url=halfs[half])
 
@@ -44,7 +46,7 @@ def get_data(driver, db: Database, current_step, total_steps, id_executor):
 @Utils.execution_time
 def main(steps=1, id_executor=1):
 
-    dcls = Driver(headers=False)
+    dcls = Driver(headers=True)
     driver = dcls.get_driver()
     db = Database()
 

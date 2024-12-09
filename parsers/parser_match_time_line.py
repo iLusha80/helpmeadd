@@ -1,10 +1,10 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import Chrome
 
 from database.connector import Database
 from models.match_time_line import MatchTimeLineData
 from utils.utils import Utils
+from utils.web_utils import WebUtils
 from logger import Logger
 
 logger = Logger(__name__)
@@ -22,7 +22,8 @@ css_selectors = {
 
 class ParserMatchTimeLine:
     @staticmethod
-    def get_match_time_line(driver, db: Database, match_id: int, url: str):
+    @WebUtils.save_html_on_exit
+    def get_match_time_line(driver: Chrome, match_id: int, db: Database, url: str):
         """
 
         :param driver:
@@ -34,13 +35,13 @@ class ParserMatchTimeLine:
 
         Utils.get_flashscore_url(driver=driver, url=url)
 
-        result = Utils.load_page(driver=driver,css_selector=css_selectors['time_line_div'])
+        result = Utils.load_page(driver=driver, css_selector=css_selectors['time_line_div'])
 
         if result != True:
-            logger.error(f"Err - {result}\n{url}")
+            logger.error(f"Err - {result}\nurl - {url}")
             return False
         else:
-            logger.debug(f"Success- {result}")
+            logger.debug(f"Success- {result}!\n Вот это дело! потекли данные")
 
         divs = driver.find_elements(By.CSS_SELECTOR, css_selectors['time_line_div'])
 

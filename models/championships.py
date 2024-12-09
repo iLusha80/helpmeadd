@@ -19,3 +19,10 @@ class ChampionShipData:
         db.cursor.execute(query)
         result = db.cursor.fetchall()
         return result
+
+    @staticmethod
+    def select_current_season(db: Database, season: str = '2024-2025'):
+        query = f"SELECT name, url, id, season FROM {CHAMPIONSHIP_TABLE_NAME} WHERE season = '{season}'"
+        db.cursor.execute(query)
+        result = db.cursor.fetchall()
+        return result

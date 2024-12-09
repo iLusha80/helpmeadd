@@ -34,12 +34,27 @@ class Utils:
 
     @staticmethod
     def load_page(driver, css_selector: str):
-        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
-        # try:
-        #     # Ожидание появления элемента в течение 3 секунд
-        #     WebDriverWait(driver, 3).until(
-        #         EC.presence_of_element_located((By.CSS_SELECTOR, css_selector))
-        #     )
-        #     return True
-        # except Exception as e:
-        #     return str(e)
+        # WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
+        try:
+            # Ожидание появления элемента в течение 3 секунд
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, css_selector))
+            )
+            return True
+        except Exception as e:
+            return str(e)
+
+    @staticmethod
+    def get_match_id_from_url(url: str) -> str:
+        """
+        Получаем ID матча из URL
+
+        :param url: Ссылка на матч
+        :return: ID матча
+        :rtype: str
+        """
+        try:
+            return url.split("/match/")[1].split("/")[0]
+        except IndexError:
+            raise ValueError("Invalid URL format.")
+

@@ -1,13 +1,16 @@
 from selenium.webdriver.common.by import By
 
 from time import sleep
+from typing import List, Dict
 
 from database.connector import Database
 from models.match_data import MatchData
 from utils.utils import Utils
+from logger import Logger
 
-#TODO сохранять куки отдельный пакет для драйвера и функций с ним связанных
-#TODO : справочник css_selectors
+logger = Logger(__name__)
+
+
 css_selectors = {
     'matches'           : '.event__match',
     'match_time'        : '.event__time',
@@ -23,14 +26,17 @@ css_selectors = {
 
 class ParserMatchInfo:
     @staticmethod
-    def get_match_info(driver, db: Database, url: str, id_champ: int) -> list[dict]:
+    def get_match_info(driver, db: Database, url: str, id_champ: int) -> List[Dict]:
         """
         Забираем информацию о матче из списка результатов
 
         :param driver:   Драйвер/Браузер
+        :type driver:    Selenium.WebDriver.Chrome
         :param db:       Экземпляр подключения к Базе Данных
+        :type db:        Database.Database
         :param url:      Ссылка на Лигу
         :param id_champ: ИД Чемпионата в базе
+        :type id_champ:  int
         :return:
         """
 
@@ -39,7 +45,7 @@ class ParserMatchInfo:
         ParserMatchInfo.get_more_match(driver)
 
         matches = driver.find_elements(By.CSS_SELECTOR, css_selectors['matches'])
-        print(f"Found {len(matches)} matches =)")
+        logger.info(f"Found {len(matches)} matches =)")
 
         result = list()
 
@@ -55,25 +61,24 @@ class ParserMatchInfo:
             dct['away_goals'] = match.find_element(By.CSS_SELECTOR, css_selectors['away_goals']).text
             dct['full_link'] = match.find_element(By.CSS_SELECTOR, css_selectors['full_link']).get_attribute('href')
             dct['id_champ'] = id_champ
+            dct['match_fs_id'] = Utils.get_match_id_from_url(dct['full_link'])
 
             result.append(dct)
 
         MatchData.insert_many(db, result)
         return result
 
-    @staticmethod # .event__more--static
+    @staticmethod
     def get_more_match(driver):
-        sleep(5)  # Wait for page to load before clicking the button
+        sleep(5)
         i = 0
         while True:
             try:
                 button = driver.find_element(By.CSS_SELECTOR, css_selectors['button_more'])
                 button.click()
                 i += 1
-                print(f"Click - {i} time")
-                sleep(5)  # Wait for page to load before clicking the button
+                sleep(5)
                 if i > 9:
                     return i
             except:
-                print(f"Button not found: {i}")
                 return i
