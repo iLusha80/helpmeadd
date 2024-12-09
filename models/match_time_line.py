@@ -18,7 +18,7 @@ class MatchTimeLineData:
     def insert_many(db: Database, data: list[dict]):
         query = f"""INSERT INTO {MATCH_TIME_LINE_TABLE_NAME}
                     (match_id, team_type, half, minutes, add_minutes, event_type, player_name, assist_player_name)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
         values = list()
         for item in data:
             values.append((item['match_id'], item['team_type'], item['half'],
