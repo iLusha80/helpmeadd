@@ -17,9 +17,13 @@ class MatchData:
         :return:
         """
         query = f"""INSERT INTO {MATCH_DATA_TABLE_NAME}
-                    (matchtime, hometeam, awayteam, home_goals, away_goals, full_link, id_champ, match_fs_id)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (full_link) DO UPDATE SET id_champ = EXCLUDED.id_champ, match_fs_id = EXCLUDED.match_fs_id"""
+                    (matchtime, hometeam, awayteam, home_goals, away_goals, full_link, id_champ, match_fs_id, match_dt)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (full_link) DO UPDATE 
+                    SET id_champ = EXCLUDED.id_champ
+                        ,match_fs_id = EXCLUDED.match_fs_id
+                        ,match_dt = EXCLUDED.match_dt
+                """
         values = list()
         for item in data:
             values.append((item['matchtime'], item['hometeam'], item['awayteam'], item['home_goals'],

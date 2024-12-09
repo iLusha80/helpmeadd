@@ -1,5 +1,3 @@
-# Приложение для сбора расписания матчей по лигам
-
 from driver.driver import Driver
 from database.connector import Database
 from parsers.parser_match_info import ParserMatchInfo
@@ -24,9 +22,9 @@ def main():
         url = row[1]
         id_champ = row[2]
         season = row[3]
-        url_result = f"{url}results/" # fixtures - расписание
+        url_result = f"{url}results/"
         logger.info(f"Парсим данные из чемпионата '{name}'[{season}] с сайта {url}")
-        ParserMatchInfo.get_match_info(driver=driver, db=db, url=url_result, id_champ=id_champ)
+        ParserMatchInfo.get_match_info(driver=driver, db=db, url=url_result, id_champ=id_champ, season=season)
         logger.info(f"Готово с чемпионатом '{name}'.")
 
 

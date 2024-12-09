@@ -26,7 +26,7 @@ css_selectors = {
 
 class ParserMatchInfo:
     @staticmethod
-    def get_match_info(driver, db: Database, url: str, id_champ: int) -> List[Dict]:
+    def get_match_info(driver, db: Database, url: str, id_champ: int, season: str) -> List[Dict]:
         """
         Забираем информацию о матче из списка результатов
 
@@ -37,6 +37,8 @@ class ParserMatchInfo:
         :param url:      Ссылка на Лигу
         :param id_champ: ИД Чемпионата в базе
         :type id_champ:  int
+        :param season: Название сезона [2024-2025]
+        :type season: str
         :return:
         """
 
@@ -62,6 +64,7 @@ class ParserMatchInfo:
             dct['full_link'] = match.find_element(By.CSS_SELECTOR, css_selectors['full_link']).get_attribute('href')
             dct['id_champ'] = id_champ
             dct['match_fs_id'] = Utils.get_match_id_from_url(dct['full_link'])
+            dct['match_dt'] = ParserMatchInfo.get_match_datetime(matchtime=dct['matchtime'], season=season)
 
             result.append(dct)
 
@@ -82,3 +85,19 @@ class ParserMatchInfo:
                     return i
             except:
                 return i
+
+    @staticmethod
+    def get_match_datetime(matchtime: str, season: str):
+        import datetime
+        dt_day = int(matchtime[0:2])
+        dt_month = int(matchtime[3:5])
+        dt_hour = int(matchtime[7:9])
+        dt_min = int(matchtime[10:12])
+        s_start_year = int(season[:4])
+        s_end_year = int(season[5:])
+        if dt_month > 6:
+            year = s_start_year
+        else:
+            year = s_end_year
+        result = datetime.datetime(year=year, month=dt_month, day=dt_day, hour=dt_hour, minute=dt_min)
+        return result

@@ -11,7 +11,7 @@ class Logger:
 
         # Форматтер для логов, включающий имя, имя файла и функцию
         formatter = logging.Formatter(
-            f'%(asctime)s - {name} - %(levelname)s - %(filename)s | %(funcName)s - %(message)s')
+            f'%(asctime)s | {name} | %(levelname)s - %(filename)s | %(funcName)s - %(message)s')
 
         # Обработчик для вывода в файл
         file_handler = RotatingFileHandler(log_file, maxBytes=1000000, backupCount=5)

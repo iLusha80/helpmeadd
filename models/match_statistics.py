@@ -2,9 +2,6 @@ from typing import Union, Dict
 
 from database.connector import Database
 from config import MATCH_STATISTICS_TABLE_NAME
-from logger import Logger
-
-logger = Logger(__name__)
 
 
 class MatchStatisticsData:
@@ -17,7 +14,6 @@ class MatchStatisticsData:
 
         value = MatchStatisticsData.preprocess_value(value=value, indicator_name=indicator_name)
         if isinstance(value, dict):
-            logger.info(value)
             for key, val in value.items():
                 indicator_name = key
                 value = val
