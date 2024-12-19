@@ -1,5 +1,9 @@
 from database.connector import Database
 from config import CHAMPIONSHIP_TABLE_NAME
+from logger import Logger
+
+logger = Logger(__name__)
+
 
 
 class ChampionShipData:
@@ -11,7 +15,7 @@ class ChampionShipData:
 
         db.cursor.execute(query, (name, url, season))
         db.conn.commit()
-        print(f"Чемпионат '{name}' {season} успешно добавлен.")
+        logger.info(f"Чемпионат '{name}' {season} успешно добавлен.")
 
     @staticmethod
     def select_all(db: Database):

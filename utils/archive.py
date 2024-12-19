@@ -5,6 +5,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from logger import Logger
+
+logger = Logger(__name__)
+
 
 class OldUtils:
     @staticmethod
@@ -25,6 +29,6 @@ class OldUtils:
         for row in rows:
             link = row.get_attribute('href')
             season = row.text
-            print(f"""csd.insert(db=db, name='{season}', url='{link}', season='{season.split()[-1]}')""")
+            logger.info(f"""csd.insert(db=db, name='{season}', url='{link}', season='{season.split()[-1]}')""")
             result.append((season, link))
         return result
